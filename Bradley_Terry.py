@@ -1,6 +1,7 @@
-####
-# Définition d'un classe pour simuler un tournoi
-####
+##################################################
+# Définition d'un classe pour simuler un tournoi #
+##################################################
+
 import numpy as np
 
 def BT_formula(Vi,Vj):
