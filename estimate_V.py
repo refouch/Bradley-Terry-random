@@ -18,6 +18,24 @@ def log_likelihood(V, X):
                 logL += X[i, j] * np.log(pij) + (1 - X[i, j]) * np.log(1 - pij)
     return -logL  # On minimise l'opposé pour maximiser la vraisemblance
 
+def compute_V(X):
+
+    n = len(X)
+    V0 = np.ones(n)
+    bounds = [(1e-6, None) for _ in range(n)]     # Contraintes pour que V_i > 0
+
+    # Optimisation
+    result = minimize(log_likelihood, V0, args=(X,), bounds=bounds, method='L-BFGS-B')
+    V_opt = result.x
+    
+    return V_opt
+
+
+############################################
+############################################
+### FONCTION POUR GENERER DES DONNEES FICTIVES
+############################################
+############################################
 
 def generate_tournament_matrix(n):
     X = np.zeros((n, n), dtype=int)  # Matrice carrée initialisée à 0
@@ -29,14 +47,3 @@ def generate_tournament_matrix(n):
             X[j, i] = 1 - result  # Assure l'asymétrie
     
     return X    
-
-def compute_V(X):
-
-    V0 = np.ones(n)
-    bounds = [(1e-6, None) for _ in range(n)]     # Contraintes pour que V_i > 0
-
-    # Optimisation
-    result = minimize(log_likelihood, V0, args=(X,), bounds=bounds, method='L-BFGS-B')
-    V_opt = result.x
-    
-    return V_opt
