@@ -5,42 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numba import jit
 import time
-from scipy import integrate
 
 ## CALCUL DU SEUIL THÉORIQUE EPSILON_N
-
-def calculer_V_U_theorique():
-    """
-    Calcule V_U = E[U/(U+1)^2] avec U ~ Uniforme[0,1].
-    
-    CALCUL ANALYTIQUE :
-    V_U = ∫₀¹ u/(u+1)² du
-    
-    Par intégration par parties ou substitution :
-    V_U = ∫₀¹ u/(u+1)² du = [ln(u+1) - u/(u+1)]₀¹ = ln(2) - 1/2
-    
-    Returns:
-        float: valeur exacte de V_U
-        
-    INTERPRÉTATION :
-    - V_U mesure la "variance effective" des probabilités de victoire
-    - Plus V_U est grand, plus la variabilité est forte
-    - Influence directement le seuil critique epsilon_N
-    """
-    # Calcul analytique exact
-    V_U_exact = np.log(2) - 0.5
-    
-    # Vérification numérique par intégration
-    def integrand(u):
-        return u / (u + 1)**2
-    
-    V_U_numerique, _ = integrate.quad(integrand, 0, 1)
-    
-    print(f"V_U (analytique) = ln(2) - 1/2 = {V_U_exact:.6f}")
-    print(f"V_U (numérique)  = {V_U_numerique:.6f}")
-    print(f"Différence = {abs(V_U_exact - V_U_numerique):.2e}\n")
-    
-    return V_U_exact
 
 def calculer_epsilon_N(N, V_U):
     """
@@ -151,7 +117,7 @@ def verifier_theoreme_super_joueur(N_values, V_U, nb_echantillons=20, nb_simulat
     print("- δ > ε_N : P(super-joueur gagne) → 1")
     print("- δ < ε_N : P(super-joueur gagne) → 0")
     print("- δ = ε_N : comportement critique")
-    print(f"avec ε_N = (log(N)/N) * √(1/V_U), V_U = {V_U:.6f}\n")
+    print(f"avec ε_N = √(log(N)/N) * √(1/V_U), V_U = {V_U:.6f}\n")
     
     # Ratios à tester par rapport au seuil
     ratios_delta = [0.5, 1.0, 2.0]  # delta = ratio * epsilon_N
@@ -199,52 +165,6 @@ def verifier_theoreme_super_joueur(N_values, V_U, nb_echantillons=20, nb_simulat
     
     return resultats
 
-def analyser_convergence_super_joueur(resultats):
-    """
-    Analyse les tendances de convergence pour valider le théorème.
-    
-    CRITÈRES DE VALIDATION :
-    - Ratio < 1 : P(super gagne) doit décroître vers 0
-    - Ratio > 1 : P(super gagne) doit croître vers 1
-    - Ratio = 1 : comportement intermédiaire/critique
-    """
-    print("=== ANALYSE DE CONVERGENCE ===\n")
-    
-    for ratio, donnees in resultats.items():
-        N_vals = [d['N'] for d in donnees]
-        probas = [d['proba'] for d in donnees]
-        
-        print(f"RATIO δ/ε_N = {ratio}")
-        print(f"Évolution P(super gagne) : {[f'{p:.3f}' for p in probas]}")
-        
-        if len(probas) >= 2:
-            tendance = probas[-1] - probas[0]
-            pente = tendance / (len(probas) - 1)  # Pente moyenne
-            
-            if ratio < 1.0:
-                if tendance < -0.05:
-                    print("✓ CONFORME : tendance décroissante (→ 0)")
-                elif abs(tendance) < 0.05:
-                    print("? STABLE : pas de tendance nette")
-                else:
-                    print("✗ NON-CONFORME : tendance croissante")
-            
-            elif ratio > 1.0:
-                if tendance > 0.05:
-                    print("✓ CONFORME : tendance croissante (→ 1)")
-                elif abs(tendance) < 0.05:
-                    print("? STABLE : pas de tendance nette")
-                else:
-                    print("✗ NON-CONFORME : tendance décroissante")
-            
-            else:  # ratio = 1.0
-                print(f"CAS CRITIQUE : tendance = {tendance:.4f}")
-                if abs(tendance) < 0.1:
-                    print("✓ Comportement critique attendu (stabilité)")
-        
-        print(f"Valeur finale : {probas[-1]:.4f}")
-        print()
-
 def plot_verification_super_joueur(resultats, V_U):
     """
     Visualise la vérification du théorème avec des graphiques détaillés.
@@ -273,7 +193,7 @@ def plot_verification_super_joueur(resultats, V_U):
     
     plt.xlabel('Nombre de joueurs N')
     plt.ylabel('P(super-joueur gagne)')
-    plt.title(f'Théorème du Super-Joueur\nV_U = {V_U:.4f}')
+    plt.title(f'Théorème du Super-Joueur')
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.ylim(-0.05, 1.05)
@@ -291,8 +211,8 @@ def plot_verification_super_joueur(resultats, V_U):
     
     # Comportement théorique de référence
     N_ref = np.logspace(1, 3, 100)
-    epsilon_ref = (np.log(N_ref) / N_ref) * np.sqrt(1 / V_U)
-    plt.loglog(N_ref, epsilon_ref, 'k--', alpha=0.5, label='√(log(N)/N)')
+    epsilon_ref = np.sqrt(np.log(N_ref) / N_ref) * np.sqrt(1 / V_U)
+    plt.loglog(N_ref, epsilon_ref, 'k--', alpha=0.5, label='√(log(N)/N) * √(1/V_U)')
     plt.legend()
     
     # Détail : cas sous-critique
@@ -341,11 +261,10 @@ def verification_complete_super_joueur(N_max=300, nb_points=6):
     Lance une vérification complète du théorème du super-joueur.
     
     PROTOCOLE EXPÉRIMENTAL :
-    1. Calcule la constante V_U théorique
-    2. Teste plusieurs tailles N avec epsilon_N correspondant
-    3. Pour chaque N, teste 3 valeurs de delta autour du seuil
-    4. Analyse les tendances de convergence
-    5. Visualise les résultats
+    1. Calculer la constante V_U théorique
+    2. Tester plusieurs tailles N avec epsilon_N correspondant
+    3. Pour chaque N, tester 3 valeurs de delta autour du seuil
+    4. Visualiser les résultats
     
     Args:
         N_max: taille maximale de population à tester
@@ -355,14 +274,14 @@ def verification_complete_super_joueur(N_max=300, nb_points=6):
     print("=" * 65)
     
     # Calcul de la constante théorique
-    V_U = calculer_V_U_theorique()
+    V_U = np.log(2)-0.5
     
     # Gamme de tailles N
     N_values = np.logspace(1, np.log10(N_max), nb_points, dtype=int)
     N_values = sorted(list(set(N_values)))
     
     print(f"Tailles N testées : {N_values}")
-    print(f"Seuil théorique : ε_N = (log(N)/N) * √(1/V_U)")
+    print(f"Seuil théorique : ε_N = √(log(N)/N) * √(1/V_U)")
     print(f"avec V_U = {V_U:.6f}\n")
     
     # Aperçu des seuils
@@ -378,59 +297,8 @@ def verification_complete_super_joueur(N_max=300, nb_points=6):
                                              nb_echantillons=15, nb_simulations=400)
     duree = time.time() - start_time
     print(f"Temps de calcul : {duree:.1f} secondes\n")
-    
-    # Analyse des résultats
-    analyser_convergence_super_joueur(resultats)
-    
+        
     # Visualisation
     plot_verification_super_joueur(resultats, V_U)
     
-    return resultats, V_U
-
-## TESTS RAPIDES POUR DÉVELOPPEMENT
-
-def test_rapide_super_joueur():
-    """
-    Test rapide pour vérifier que le code fonctionne.
-    """
-    print("=== TEST RAPIDE SUPER-JOUEUR ===")
-    
-    V_U = calculer_V_U_theorique()
-    
-    # Paramètres légers
-    N_values = [20, 50, 100]
-    
-    resultats = verifier_theoreme_super_joueur(N_values, V_U, 
-                                             nb_echantillons=8, nb_simulations=200)
-    
-    analyser_convergence_super_joueur(resultats)
-    plot_verification_super_joueur(resultats, V_U)
-    
-    return resultats, V_U
-
-def demo_calcul_epsilon():
-    """
-    Démontre le calcul et l'évolution du seuil epsilon_N.
-    """
-    print("=== DÉMONSTRATION DU SEUIL ε_N ===\n")
-    
-    V_U = calculer_V_U_theorique()
-    
-    print("Évolution du seuil critique :")
-    N_vals = [10, 20, 50, 100, 200, 500, 1000]
-    
-    for N in N_vals:
-        eps = calculer_epsilon_N(N, V_U)
-        force_critique = 1 + eps
-        print(f"N={N:4d} : ε_N = {eps:.6f}, force critique = {force_critique:.6f}")
-    
-    print(f"\nComportement asymptotique : ε_N ~ √(log(N)/N)")
-    print("Le super-joueur a besoin d'un avantage de plus en plus faible...")
-    print("mais qui décroît très lentement (facteur √log(N)) !")
-
-# Utilisation recommandée :
-# resultats, V_U = verification_complete_super_joueur()  # Vérification complète
-# ou  
-# resultats, V_U = test_rapide_super_joueur()  # Test rapide
-# ou
-# demo_calcul_epsilon()  # Juste voir l'évolution du seuil
+    return resultats

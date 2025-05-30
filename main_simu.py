@@ -1,6 +1,6 @@
 from Verif_thm1 import*
 from Verif_thm2 import*
-from Verif_thm3_bis import*
+from Verif_thm3 import*
 
 ########## Théorème n°1 ##########
 
