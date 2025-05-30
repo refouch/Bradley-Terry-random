@@ -1,4 +1,7 @@
 from Verif_thm1 import*
+from Verif_thm2 import*
+
+########## Théorème n°1 ##########
 
 n_simulation = [50,100,250,500,750,1000,2000,3000,4000,5000]
 n_theorique = [100,500,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
@@ -24,6 +27,11 @@ n_theorique = [100,500,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
 ####### Loi Beta : Beta(1,5) #######
 
 # Version simulée
-print(Plot_proba_optimisee(distribution='beta', methode='parallele',n_values=n_simulation))
+'''print(Plot_proba_optimisee(distribution='beta', methode='parallele',n_values=n_simulation))'''
 # Version théorique
 '''print(Plot_proba_optimisee(distribution='beta', methode='theorique',n_values=n_theorique))'''
+
+
+########## Théorème n°2 ##########
+
+print(verification_complete(N_max=1000,nb_points=15))
