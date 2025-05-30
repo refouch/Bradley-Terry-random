@@ -1,5 +1,6 @@
 from Verif_thm1 import*
 from Verif_thm2 import*
+from Verif_thm3_bis import*
 
 ########## Théorème n°1 ##########
 
@@ -34,4 +35,13 @@ n_theorique = [100,500,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
 
 ########## Théorème n°2 ##########
 
-print(verification_complete(N_max=1000,nb_points=15))
+## Vérification
+'''print(verification_complete(N_max=1000,nb_points=15))'''
+
+
+########## Théorème n°3 ##########
+
+resultats, V_U = verification_complete_super_joueur(N_max=300,nb_points=6)
+print(resultats)
+
+'''print(demo_calcul_epsilon())'''
