@@ -24,7 +24,7 @@ où \( V_i \) représente la force du joueur \( i \), que l'on souhaite estimer.
 On pose donc le modèle  
 
 $$
-\left{ P_v , v \in \mathbb{R}^n \right\}
+\left{ P_v , v \in \mathbb{R}^n \right}
 $$  
 
 sur  
