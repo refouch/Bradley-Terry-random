@@ -1,5 +1,5 @@
 # Vérification du théorème des N^gamma meilleurs joueurs
-# Distribution uniforme -> Seuil critique à gamma = 1/2
+# Distribution uniforme -> alpha = 1 -> Seuil critique à gamma = 1/2
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -155,52 +155,6 @@ def verifier_theoreme_ngamma(N_values, gamma_values, nb_echantillons=20, nb_simu
     
     return resultats
 
-'''def analyser_convergence(resultats):
-    """
-    Analyse les tendances de convergence pour valider le théorème.
-    
-    Args:
-        resultats: dictionnaire des résultats par gamma
-        
-    ANALYSE :
-    - Examine si P(top N^gamma gagne) converge vers 0 ou 1
-    - Calcule les tendances (pentes) pour quantifier la convergence
-    - Identifie le comportement autour du seuil gamma = 1/2
-    """
-    print("=== ANALYSE DE CONVERGENCE ===\n")
-    
-    for gamma, donnees in resultats.items():
-        N_vals = [d['N'] for d in donnees]
-        probas = [d['proba'] for d in donnees]
-        
-        print(f"GAMMA = {gamma}")
-        print(f"Évolution : {[f'{p:.3f}' for p in probas]}")
-        
-        # Analyse de la tendance
-        if len(probas) >= 2:
-            tendance = probas[-1] - probas[0]  # Différence première/dernière valeur
-            
-            if gamma < 0.5:
-                if tendance < -0.1:
-                    print("✓ CONFORME : tendance décroissante (→ 0)")
-                elif abs(tendance) < 0.1:
-                    print("? INCERTAIN : tendance stable")
-                else:
-                    print("✗ NON-CONFORME : tendance croissante")
-            
-            elif gamma > 0.5:
-                if tendance > 0.1:
-                    print("✓ CONFORME : tendance croissante (→ 1)")
-                elif abs(tendance) < 0.1:
-                    print("? INCERTAIN : tendance stable")
-                else:
-                    print("✗ NON-CONFORME : tendance décroissante")
-            
-            else:  # gamma = 0.5
-                print(f"CAS CRITIQUE : tendance = {tendance:.3f}")
-        
-        print()'''
-
 def plot_verification_theoreme(resultats):
     """
     Visualise la vérification du théorème avec des graphiques clairs.
@@ -291,11 +245,10 @@ def verification_complete(N_max=200, nb_points=5):
     Lance une vérification complète du théorème.
     
     PROTOCOLE EXPÉRIMENTAL :
-    1. Teste plusieurs valeurs de gamma autour du seuil 1/2
-    2. Utilise des tailles croissantes de population N
-    3. Moyenne sur plusieurs échantillons pour robustesse
-    4. Analyse les tendances de convergence
-    5. Visualise les résultats
+    1. Tester plusieurs valeurs de gamma autour du seuil 1/2
+    2. Utiliser des tailles croissantes de population N
+    3. Moyenner sur plusieurs échantillons pour robustesse
+    4. Visualiser les résultats
     
     Args:
         N_max: taille maximale de population à tester
@@ -321,37 +274,8 @@ def verification_complete(N_max=200, nb_points=5):
                                         nb_echantillons=15, nb_simulations=400)
     duree = time.time() - start_time
     print(f"Temps de calcul : {duree:.1f} secondes\n")
-    
-    # Analyse des résultats
-    '''analyser_convergence(resultats)'''
-    
+        
     # Visualisation
     plot_verification_theoreme(resultats)
     
     return resultats
-
-## TESTS RAPIDES POUR DÉVELOPPEMENT
-
-def test_rapide():
-    """
-    Test rapide pour vérifier que le code fonctionne.
-    Utilise des paramètres réduits pour un aperçu rapide.
-    """
-    print("=== TEST RAPIDE ===")
-    
-    # Paramètres légers
-    N_values = [20, 50, 100]
-    gamma_values = [0.3, 0.5, 0.7]
-    
-    resultats = verifier_theoreme_ngamma(N_values, gamma_values, 
-                                        nb_echantillons=5, nb_simulations=200)
-    
-    '''analyser_convergence(resultats)'''
-    plot_verification_theoreme(resultats)
-    
-    return resultats
-
-# Utilisation recommandée :
-# resultats = verification_complete()  # Vérification complète
-# ou
-# resultats = test_rapide()  # Test rapide
