@@ -264,8 +264,7 @@ def verification_complete_super_joueur(N_max=300, nb_points=6):
     1. Calculer la constante V_U théorique
     2. Tester plusieurs tailles N avec epsilon_N correspondant
     3. Pour chaque N, tester 3 valeurs de delta autour du seuil
-    4. Analyser les tendances de convergence
-    5. Visualiser les résultats
+    4. Visualiser les résultats
     
     Args:
         N_max: taille maximale de population à tester
@@ -302,4 +301,4 @@ def verification_complete_super_joueur(N_max=300, nb_points=6):
     # Visualisation
     plot_verification_super_joueur(resultats, V_U)
     
-    return resultats, V_U
+    return resultats

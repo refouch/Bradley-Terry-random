@@ -41,7 +41,5 @@ n_theorique = [100,500,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
 
 ########## Théorème n°3 ##########
 
-resultats, V_U = verification_complete_super_joueur(N_max=300,nb_points=6)
-print(resultats)
-
-'''print(demo_calcul_epsilon())'''
+## Vérification
+'''print(verification_complete_super_joueur(N_max=300,nb_points=6))'''
